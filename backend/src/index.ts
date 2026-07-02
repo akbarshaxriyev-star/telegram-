@@ -46,7 +46,7 @@ app.use("/api/settings", settingsRoutes);
 // Serve frontend static files
 const frontendDist = path.join(__dirname, "../../../frontend/dist");
 app.use(express.static(frontendDist));
-app.get("*", (req: express.Request, res: express.Response) => {
+app.get("(.*)", (req: express.Request, res: express.Response) => {
   const indexPath = path.join(frontendDist, "index.html");
   res.sendFile(indexPath, (err) => {
     if (err) {
