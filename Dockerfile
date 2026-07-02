@@ -26,4 +26,4 @@ EXPOSE 5000
 
 WORKDIR /app/backend
 
-CMD ["npx", "tsx", "src/index.ts"]
+CMD npx prisma db push --accept-data-loss && npx tsx src/index.ts
