@@ -25,7 +25,13 @@ console.log = (...args) => {
   originalLog(...args);
 };
 console.error = (...args) => {
-  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+  const msg = args.map(a => {
+    if (a instanceof Error) return a.stack || a.message;
+    if (typeof a === 'object') {
+      try { return JSON.stringify(a); } catch (e) { return String(a); }
+    }
+    return a;
+  }).join(' ');
   logs.push(`[ERROR] ${new Date().toISOString()} - ${msg}`);
   if (logs.length > 200) logs.shift();
   originalError(...args);

@@ -91,7 +91,7 @@ export class TelegramService {
 
       try {
         await client.invoke(new Api.messages.SetTyping({
-          peer: event.message.peerId,
+          peer: message.chatId,
           action: new Api.SendMessageTypingAction()
         }));
       } catch (err) {
@@ -100,7 +100,7 @@ export class TelegramService {
 
       setTimeout(async () => {
         try {
-          await client.sendMessage(event.message.peerId, { message: replyText });
+          await client.sendMessage(message.chatId, { message: replyText });
           await prisma.messageHistory.create({
             data: {
               userId,
