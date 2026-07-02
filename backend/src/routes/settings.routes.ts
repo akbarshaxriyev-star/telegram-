@@ -62,5 +62,23 @@ router.post("/", authMiddleware, async (req: Request, res: Response): Promise<an
     res.status(500).json({ error: error.message });
   }
 });
+// Test Gemini AI
+router.post("/test-ai", authMiddleware, async (req: Request, res: Response): Promise<any> => {
+  try {
+    const userId = (req as any).userId;
+    const settings = await prisma.aiSettings.findUnique({ where: { userId } });
+    if (!settings) { res.status(400).json({ error: "Sozlamalar topilmadi" }); return; }
+
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+    const model = genAI.getGenerativeModel({ model: settings.gptModel || "gemini-1.5-pro" });
+    
+    const result = await model.generateContent("Salom, qandaysan? Qisqa javob ber.");
+    const response = await result.response;
+    res.json({ success: true, text: response.text() });
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message || error.toString() });
+  }
+});
 
 export default router;

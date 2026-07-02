@@ -149,9 +149,23 @@ export default function Settings() {
               </div>
             </div>
 
-            <button onClick={saveSettings} disabled={isSaving} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium transition cursor-pointer w-full mt-4 shadow-lg shadow-blue-500/20 active:scale-[0.98] disabled:opacity-50">
-              {isSaving ? "Saqlanmoqda..." : "Saqlash"}
-            </button>
+            <div className="flex flex-col gap-3 mt-4">
+              <button onClick={async () => {
+                try {
+                  const res = await axios.post("/api/settings/test-ai", {}, { headers: { Authorization: `Bearer ${token}` } });
+                  if (res.data.success) alert("Gemini API ishlayapti! Javob: " + res.data.text);
+                  else alert("Xato: " + res.data.error);
+                } catch (e: any) {
+                  alert("Xato yuz berdi: " + (e.response?.data?.error || e.message));
+                }
+              }} className="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-medium transition cursor-pointer w-full shadow-lg shadow-slate-900/20 active:scale-[0.98]">
+                Gemini API ni sinab ko'rish
+              </button>
+              
+              <button onClick={saveSettings} disabled={isSaving} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium transition cursor-pointer w-full shadow-lg shadow-blue-500/20 active:scale-[0.98] disabled:opacity-50">
+                {isSaving ? "Saqlanmoqda..." : "Saqlash"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
