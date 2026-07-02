@@ -44,10 +44,15 @@ app.use("/api/telegram", telegramRoutes);
 app.use("/api/settings", settingsRoutes);
 
 // Serve frontend static files
-const frontendDist = path.join(__dirname, "../../frontend/dist");
+const frontendDist = path.join(__dirname, "../../../frontend/dist");
 app.use(express.static(frontendDist));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendDist, "index.html"));
+app.get("*", (req: express.Request, res: express.Response) => {
+  const indexPath = path.join(frontendDist, "index.html");
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      res.status(200).json({ status: "API running" });
+    }
+  });
 });
 
 const PORT = process.env.PORT || 5000;
