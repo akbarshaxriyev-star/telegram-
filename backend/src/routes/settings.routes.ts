@@ -71,7 +71,9 @@ router.post("/test-ai", authMiddleware, async (req: Request, res: Response): Pro
 
     const { GoogleGenerativeAI } = require("@google/generative-ai");
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-    const model = genAI.getGenerativeModel({ model: settings.gptModel || "gemini-1.5-pro" });
+    let modelName = settings.gptModel || "gemini-2.5-flash";
+    if (modelName === "gemini-1.5-pro") modelName = "gemini-2.5-flash";
+    const model = genAI.getGenerativeModel({ model: modelName });
     
     const result = await model.generateContent("Salom, qandaysan? Qisqa javob ber.");
     const response = await result.response;

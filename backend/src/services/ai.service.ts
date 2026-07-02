@@ -17,7 +17,10 @@ export class AIService {
       if (rule && rule.type === "BLACKLIST") return null;
       if (rule && rule.type === "DISABLED") return null;
 
-      const model = genAI.getGenerativeModel({ model: settings.gptModel || "gemini-1.5-pro" });
+      let modelName = settings.gptModel || "gemini-2.5-flash";
+      if (modelName === "gemini-1.5-pro") modelName = "gemini-2.5-flash"; // auto migrate unsupported model
+
+      const model = genAI.getGenerativeModel({ model: modelName });
       
       const history = await prisma.messageHistory.findMany({
         where: { userId, chatId },
