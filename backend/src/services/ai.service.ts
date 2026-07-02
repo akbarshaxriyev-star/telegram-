@@ -17,11 +17,7 @@ export class AIService {
       if (rule && rule.type === "BLACKLIST") return null;
       if (rule && rule.type === "DISABLED") return null;
 
-      let modelName = settings.gptModel || "llama-3.3-70b-versatile";
-      // Auto-migrate: if model is a Gemini model, switch to Llama (Groq doesn't support Gemini)
-      if (!modelName || modelName.includes("gemini") || modelName.includes("gpt")) {
-        modelName = "llama-3.3-70b-versatile";
-      }
+      const modelName = settings.gptModel || "llama-3.3-70b-versatile";
 
       const history = await prisma.messageHistory.findMany({
         where: { userId, chatId },
