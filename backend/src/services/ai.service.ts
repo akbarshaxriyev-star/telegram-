@@ -17,12 +17,15 @@ export class AIService {
       if (rule && rule.type === "BLACKLIST") return null;
       if (rule && rule.type === "DISABLED") return null;
 
-      const modelName = settings.gptModel || "llama-3.3-70b-versatile";
+      let modelName = settings.gptModel || "llama-3.3-70b-versatile";
+      if (modelName.toLowerCase().includes("gemini")) {
+          modelName = "llama-3.3-70b-versatile";
+      }
 
       const history = await prisma.messageHistory.findMany({
         where: { userId, chatId },
         orderBy: { createdAt: 'desc' },
-        take: settings.maxMemory
+        take: Math.min(settings.maxMemory || 20, 20)
       });
 
       // format history as messages
