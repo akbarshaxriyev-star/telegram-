@@ -89,9 +89,16 @@ export class TelegramService {
       const io = getSocketIO();
       if(io) io.emit("ai_typing", { userId, chatId });
 
+      let inputPeer;
+      try {
+        inputPeer = await message.getInputChat();
+      } catch (e) {
+        inputPeer = message.peerId;
+      }
+
       try {
         await client.invoke(new Api.messages.SetTyping({
-          peer: message.chatId,
+          peer: inputPeer,
           action: new Api.SendMessageTypingAction()
         }));
       } catch (err) {
@@ -100,7 +107,11 @@ export class TelegramService {
 
       setTimeout(async () => {
         try {
-          await client.sendMessage(message.chatId, { message: replyText });
+          if (message.reply) {
+            await message.reply({ message: replyText });
+          } else {
+            await client.sendMessage(inputPeer, { message: replyText });
+          }
           await prisma.messageHistory.create({
             data: {
               userId,
