@@ -1,7 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import prisma from "../prisma";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || "" });
 
 export class AIService {
   static async generateReply(userId: number, chatId: string, incomingMessage: string): Promise<string | null> {
@@ -17,36 +17,38 @@ export class AIService {
       if (rule && rule.type === "BLACKLIST") return null;
       if (rule && rule.type === "DISABLED") return null;
 
-      let modelName = settings.gptModel || "gemini-2.5-flash";
-      if (modelName === "gemini-1.5-pro") modelName = "gemini-2.5-flash"; // auto migrate unsupported model
+      const modelName = settings.gptModel || "llama-3.3-70b-versatile";
 
-      const model = genAI.getGenerativeModel({ model: modelName });
-      
       const history = await prisma.messageHistory.findMany({
         where: { userId, chatId },
         orderBy: { createdAt: 'desc' },
         take: settings.maxMemory
       });
 
-      // format history
-      const formattedHistory = history.reverse().map(msg => {
-        return `${msg.isFromMe ? 'Me' : 'User'}: ${msg.message}`;
-      }).join('\n');
-
+      // format history as messages
       const systemPrompt = rule?.customPrompt || settings.systemPrompt;
+      const messages: { role: "user" | "assistant"; content: string }[] = [];
 
-      const prompt = `
-System Prompt: ${systemPrompt}
+      history.reverse().forEach(msg => {
+        messages.push({
+          role: msg.isFromMe ? "assistant" : "user",
+          content: msg.message
+        });
+      });
 
-Conversation History:
-${formattedHistory}
+      messages.push({ role: "user", content: incomingMessage });
 
-User: ${incomingMessage}
-Me:`;
+      const completion = await groq.chat.completions.create({
+        model: modelName,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages
+        ],
+        temperature: settings.temperature || 0.7,
+        max_tokens: 500,
+      });
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      return completion.choices[0]?.message?.content || null;
     } catch (error) {
       console.error("AI Error:", error);
       return null;

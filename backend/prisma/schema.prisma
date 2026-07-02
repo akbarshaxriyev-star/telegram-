@@ -41,7 +41,7 @@ model AiSettings {
   timezone         String   @default("Asia/Tashkent")
   maxMemory        Int      @default(100)
   temperature      Float    @default(0.7)
-  gptModel         String   @default("gemini-2.5-flash")
+  gptModel         String   @default("llama-3.3-70b-versatile")
   systemPrompt     String   @default("Siz foydalanuvchining shaxsiy Telegram akkaunti egasi nomidan javob beryapsiz. Muloyim bo'ling. Tabiiy javob bering. Sun'iy intellekt ekanligingizni bildirmang. Agar bilmasangiz 'Keyinroq javob beraman' deb ayting. Iloji boricha qisqa javob bering.")
 }
 

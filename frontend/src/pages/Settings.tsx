@@ -135,8 +135,10 @@ export default function Settings() {
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">Model</label>
                 <select value={model} onChange={e => setModel(e.target.value)} className="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-3 text-sm md:text-base text-slate-200 transition focus:border-blue-500">
-                  <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                  <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                  <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Tez, aqlli)</option>
+                  <option value="llama3-8b-8192">Llama 3 8B (Eng tez)</option>
+                  <option value="gemma2-9b-it">Gemma 2 9B (Google)</option>
+                  <option value="mixtral-8x7b-32768">Mixtral 8x7B (Ko'p til)</option>
                 </select>
               </div>
               <div>

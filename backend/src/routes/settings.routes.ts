@@ -62,22 +62,24 @@ router.post("/", authMiddleware, async (req: Request, res: Response): Promise<an
     res.status(500).json({ error: error.message });
   }
 });
-// Test Gemini AI
+// Test Groq AI
 router.post("/test-ai", authMiddleware, async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = (req as any).userId;
     const settings = await prisma.aiSettings.findUnique({ where: { userId } });
     if (!settings) { res.status(400).json({ error: "Sozlamalar topilmadi" }); return; }
 
-    const { GoogleGenerativeAI } = require("@google/generative-ai");
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-    let modelName = settings.gptModel || "gemini-2.5-flash";
-    if (modelName === "gemini-1.5-pro") modelName = "gemini-2.5-flash";
-    const model = genAI.getGenerativeModel({ model: modelName });
+    const Groq = require("groq-sdk").default;
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || "" });
+    const modelName = settings.gptModel || "llama-3.3-70b-versatile";
     
-    const result = await model.generateContent("Salom, qandaysan? Qisqa javob ber.");
-    const response = await result.response;
-    res.json({ success: true, text: response.text() });
+    const completion = await groq.chat.completions.create({
+      model: modelName,
+      messages: [{ role: "user", content: "Salom, qandaysan? Qisqa javob ber." }],
+      max_tokens: 100,
+    });
+    const text = completion.choices[0]?.message?.content || "";
+    res.json({ success: true, text });
   } catch (error: any) {
     res.status(500).json({ success: false, error: error.message || error.toString() });
   }
