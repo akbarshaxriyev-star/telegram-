@@ -14,6 +14,23 @@ import { TelegramService } from "./services/telegram.service";
 import path from "path";
 import { fileURLToPath } from "url";
 
+// In-memory logger for debugging Render
+const logs: string[] = [];
+const originalLog = console.log;
+const originalError = console.error;
+console.log = (...args) => {
+  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+  logs.push(`[INFO] ${new Date().toISOString()} - ${msg}`);
+  if (logs.length > 200) logs.shift();
+  originalLog(...args);
+};
+console.error = (...args) => {
+  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+  logs.push(`[ERROR] ${new Date().toISOString()} - ${msg}`);
+  if (logs.length > 200) logs.shift();
+  originalError(...args);
+};
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -24,6 +41,10 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+
+app.get('/api/logs', (req, res) => {
+  res.json({ logs });
+});
 
 let socketIoInstance: Server | null = null;
 
