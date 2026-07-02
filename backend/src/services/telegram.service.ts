@@ -1,4 +1,4 @@
-import { TelegramClient } from "telegram";
+import { TelegramClient, Api } from "telegram";
 import { StringSession } from "telegram/sessions";
 import prisma from "../prisma";
 import { AIService } from "./ai.service";
@@ -88,6 +88,15 @@ export class TelegramService {
 
       const io = getSocketIO();
       if(io) io.emit("ai_typing", { userId, chatId });
+
+      try {
+        await client.invoke(new Api.messages.SetTyping({
+          peer: event.message.peerId,
+          action: new Api.SendMessageTypingAction()
+        }));
+      } catch (err) {
+        console.error("Failed to set typing status:", err);
+      }
 
       setTimeout(async () => {
         try {
