@@ -16,7 +16,7 @@ export default function TelegramConnect({ onClose, onConnected }: { onClose: () 
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/telegram/send-code', { phone }, {
+      const res = await axios.post('/api/telegram/send-code', { phone }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPhoneCodeHash(res.data.phoneCodeHash);
@@ -32,7 +32,7 @@ export default function TelegramConnect({ onClose, onConnected }: { onClose: () 
     setLoading(true);
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/telegram/verify-code', {
+      await axios.post('/api/telegram/verify-code', {
         phone,
         phoneCodeHash,
         code,

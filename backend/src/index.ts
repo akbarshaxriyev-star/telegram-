@@ -11,6 +11,9 @@ import settingsRoutes from "./routes/settings.routes";
 import prisma from "./prisma";
 import { TelegramService } from "./services/telegram.service";
 
+import path from "path";
+import { fileURLToPath } from "url";
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -39,6 +42,13 @@ socketIoInstance = io;
 app.use("/api/auth", authRoutes);
 app.use("/api/telegram", telegramRoutes);
 app.use("/api/settings", settingsRoutes);
+
+// Serve frontend static files
+const frontendDist = path.join(__dirname, "../../frontend/dist");
+app.use(express.static(frontendDist));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendDist, "index.html"));
+});
 
 const PORT = process.env.PORT || 5000;
 

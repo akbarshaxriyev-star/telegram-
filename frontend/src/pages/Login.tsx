@@ -21,7 +21,7 @@ export default function Login() {
 
     try {
       const endpoint = isRegister ? '/api/auth/register' : '/api/auth/login';
-      const res = await axios.post(`http://localhost:5000${endpoint}`, { phone, password });
+      const res = await axios.post(`${endpoint}`, { phone, password });
       setAuth(res.data.token, res.data.user);
       navigate('/dashboard');
     } catch (err: any) {

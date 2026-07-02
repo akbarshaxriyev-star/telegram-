@@ -17,7 +17,7 @@ export default function Settings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/settings", {
+        const res = await axios.get("/api/settings", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data) {
@@ -42,7 +42,7 @@ export default function Settings() {
   const saveSettings = async () => {
     setIsSaving(true);
     try {
-      await axios.post("http://localhost:5000/api/settings", {
+      await axios.post("/api/settings", {
         systemPrompt: prompt,
         enabled: enabled === "true",
         gptModel: model,

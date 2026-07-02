@@ -19,7 +19,8 @@ export default function Dashboard() {
       return;
     }
 
-    const socket = io('http://localhost:5000');
+    const socketUrl = import.meta.env.PROD ? '/' : 'http://localhost:5000';
+    const socket = io(socketUrl);
     socket.on('ai_replied', (data) => {
       setMessages(prev => [{from: "AI", text: data.text}, ...prev].slice(0, 10));
     });
