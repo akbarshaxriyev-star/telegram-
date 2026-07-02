@@ -44,7 +44,7 @@ app.use("/api/telegram", telegramRoutes);
 app.use("/api/settings", settingsRoutes);
 
 // Serve frontend static files
-const frontendDist = path.join(__dirname, "../../../frontend/dist");
+const frontendDist = path.join(__dirname, "../../frontend/dist");
 app.use(express.static(frontendDist));
 app.use((req: express.Request, res: express.Response) => {
   const indexPath = path.join(frontendDist, "index.html");
